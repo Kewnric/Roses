@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbd0de">
+  <meta name="robots" content="noindex">
+  <title>For You ♡</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 86C24 70 8 54 8 34 8 20 19 10 32 10c9 0 15 5 18 12 3-7 9-12 18-12 13 0 24 10 24 24 0 20-16 36-42 52z' fill='%23ff4d6d'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/fraunces-latin-soft-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/caveat-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="scene" aria-hidden="true">
+    <div class="scene-bg"></div>
+    <div class="scene-bg"></div>
+    <canvas class="ambient"></canvas>
+  </div>
+
+  <!-- ░░ Envelope intro ░░ -->
+  <section class="intro" id="intro">
+    <button class="envelope" type="button" aria-label="Open the envelope">
+      <span class="env-back"></span>
+      <span class="env-card">
+        <span class="env-card-kicker">a little something</span>
+        <span class="env-card-title">Happy Monthsary</span>
+      </span>
+      <span class="env-front"></span>
+      <span class="env-flap"></span>
+      <span class="env-seal"></span>
+    </button>
+    <p class="intro-to">For <span data-her-name></span></p>
+    <p class="intro-hint" data-envelope-note>tap to open</p>
+  </section>
+
+  <main class="app" id="app" hidden>
+
+    <!-- ░░ Home ░░ -->
+    <section class="view view-home" data-view="home" aria-labelledby="home-title">
+      <div class="home">
+        <header class="hero">
+          <p class="kicker">for <span data-her-name></span>, with all my heart</p>
+          <h1 class="hero-title" id="home-title"></h1>
+          <p class="hero-sub" data-together></p>
+        </header>
+
+        <nav class="home-cards" aria-label="Open">
+          <a class="home-card hc-voices" href="#/voices">
+            <span class="hc-art" aria-hidden="true">
+              <span class="hc-stk" data-stk="music"></span>
+              <span class="hc-stk" data-stk="heart"></span>
+              <span class="hc-stk" data-stk="sparkles"></span>
+            </span>
+            <span class="hc-text">
+              <span class="hc-title">Voice notes</span>
+              <span class="hc-sub">Little things I recorded for whenever you need to hear me.</span>
+            </span>
+            <span class="hc-go" aria-hidden="true">→</span>
+          </a>
+          <a class="home-card hc-letter" href="#/letter">
+            <span class="hc-art" aria-hidden="true">
+              <span class="hc-stk" data-stk="letter"></span>
+              <span class="hc-stk" data-stk="rose"></span>
+              <span class="hc-stk" data-stk="kiss"></span>
+            </span>
+            <span class="hc-text">
+              <span class="hc-title">A letter for you</span>
+              <span class="hc-sub">Written by me, and read to you in my own voice.</span>
+            </span>
+            <span class="hc-go" aria-hidden="true">→</span>
+          </a>
+        </nav>
+
+        <p class="home-foot">made with love by <span data-your-name></span></p>
+      </div>
+    </section>
+
+    <!-- ░░ Voice notes ░░ -->
+    <section class="view view-voices" data-view="voices" aria-labelledby="voices-title">
+      <header class="view-head">
+        <a class="back" href="#/" aria-label="Back home"><span aria-hidden="true">←</span><span class="back-label">Home</span></a>
+        <div class="view-head-text">
+          <h2 class="view-title" id="voices-title">Voice notes</h2>
+          <p class="view-sub">Tap one whenever you need me.</p>
+        </div>
+        <span class="view-head-spacer"></span>
+      </header>
+      <div class="vn-grid" id="vn-grid"></div>
+    </section>
+
+    <!-- ░░ Letter ░░ -->
+    <section class="view view-letter" data-view="letter" aria-labelledby="letter-title">
+      <header class="view-head">
+        <a class="back" href="#/" aria-label="Back home"><span aria-hidden="true">←</span><span class="back-label">Home</span></a>
+        <div class="view-head-text">
+          <h2 class="view-title" id="letter-title">A letter for you</h2>
+        </div>
+        <span class="view-head-spacer"></span>
+      </header>
+
+      <div class="letter-wrap" id="letter-wrap">
+        <article class="paper">
+          <span class="tape tape-l" aria-hidden="true"></span>
+          <span class="tape tape-r" aria-hidden="true"></span>
+          <p class="letter-date" id="letter-date"></p>
+          <div class="letter-body" id="letter-body"></div>
+        </article>
+        <div class="sticker-layer" id="sticker-layer" aria-hidden="true"></div>
+      </div>
+
+      <button class="follow-chip" id="follow-chip" type="button">Follow along ↓</button>
+
+      <div class="player" id="player">
+        <p class="player-hint" id="player-hint">Press play and I'll read it to you ♡</p>
+        <button class="pl-btn pl-play" id="pl-play" type="button" aria-label="Play">
+          <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.2-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+          <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.4"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.4"/></svg>
+        </button>
+        <button class="pl-btn pl-stop" id="pl-stop" type="button" aria-label="Stop">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="2.2"/></svg>
+        </button>
+        <div class="pl-track">
+          <input class="pl-range" id="pl-range" type="range" min="0" max="1000" value="0" step="1" aria-label="Position in the letter">
+        </div>
+        <span class="pl-time" id="pl-time">0:00</span>
+      </div>
+      <audio id="letter-audio" preload="metadata"></audio>
+    </section>
+  </main>
+
+  <div class="fx-layer" aria-hidden="true"></div>
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Content (edit these) -->
+  <script src="content/settings.js"></script>
+  <script src="content/voice-notes.js"></script>
+  <script src="content/letter.js"></script>
+  <script src="content/letter-timing.js"></script>
+
+  <!-- Site code -->
+  <script src="js/common.js"></script>
+  <script src="js/stickers.js"></script>
+  <script src="js/themes.js"></script>
+  <script src="js/letter-core.js"></script>
+  <script src="js/voices.js"></script>
+  <script src="js/letter.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
