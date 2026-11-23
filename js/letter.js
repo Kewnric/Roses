@@ -238,6 +238,9 @@
   function follow(forceNow) {
     if (!active) return;
     if (!forceNow && performance.now() < userScrollUntil) return;
+    // Hold still while a theme fades in: scrolling under the fading snapshot would ghost the text.
+    // The next word after the fade catches up.
+    if (!forceNow && R.themes.fading) return;
     if (chip.classList.contains('show') && performance.now() >= userScrollUntil) chip.classList.remove('show');
     const s = spans[Math.max(0, Math.min(idx, spans.length - 1))];
     if (!s) return;

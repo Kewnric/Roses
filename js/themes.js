@@ -289,14 +289,10 @@
   let current = null;
   let layers = [];
   let active = 0;
+  let fade = null; // the running view transition, if any
+  let rescueTap = false;
 
-  function apply(name) {
-    const key = String(name || '').trim().toLowerCase();
-    const t = THEMES[key] || THEMES.blush;
-    if (!THEMES[key]) console.warn(`[Roses] Unknown theme "${name}". Options: ${Object.keys(THEMES).join(', ')}`);
-    const resolved = THEMES[key] ? key : 'blush';
-    if (resolved === current) return;
-    current = resolved;
+  function switchTo(resolved, t) {
     const root = document.documentElement;
     root.dataset.theme = resolved;
     for (const [k, v] of Object.entries(t.vars)) root.style.setProperty('--' + k, v);
@@ -312,11 +308,64 @@
     if (Ambient.canvas) Ambient.set(t.fx);
   }
 
+  function apply(name) {
+    const key = String(name || '').trim().toLowerCase();
+    const t = THEMES[key] || THEMES.blush;
+    if (!THEMES[key]) console.warn(`[Roses] Unknown theme "${name}". Options: ${Object.keys(THEMES).join(', ')}`);
+    const resolved = THEMES[key] ? key : 'blush';
+    if (resolved === current) return;
+    const first = current === null;
+    current = resolved;
+    // Fade with a view transition: the browser snapshots the old look and cross-fades it into
+    // the new one on the GPU, so the page is restyled once instead of on every frame.
+    // Without support (or with reduced motion) the colors switch at once; the background
+    // layers still cross-fade on their own.
+    if (first || reduceMotion || document.hidden || !document.startViewTransition) return switchTo(resolved, t);
+    try {
+      const vt = document.startViewTransition(() => switchTo(resolved, t));
+      fade = vt;
+      // A newer theme change, or the phone locking mid-fade, cancels this fade. The theme still
+      // switches, so that's not an error worth reporting.
+      const done = () => { if (fade === vt) fade = null; };
+      vt.ready.catch(() => {});
+      vt.updateCallbackDone.catch(() => {});
+      vt.finished.then(done, done);
+    } catch (e) {
+      fade = null;
+      switchTo(resolved, t);
+    }
+  }
+
+  /* While a fade runs, the browser hands every tap to <html> instead of the button under the
+     finger. So a tap ends the fade at once (which also lets scrolling start cleanly) and is then
+     passed on to whatever was tapped, so play/pause and the cards never ignore a tap. */
+  function initTaps() {
+    document.addEventListener('pointerdown', () => {
+      if (!fade) return;
+      rescueTap = true;
+      fade.skipTransition();
+    }, true);
+    document.addEventListener('click', (e) => {
+      if (!rescueTap) return;
+      rescueTap = false;
+      if (e.target !== document.documentElement || !e.isTrusted) return; // delivered normally
+      const { clientX: x, clientY: y } = e;
+      const pass = () => {
+        let el = document.elementFromPoint(x, y);
+        while (el && !(el instanceof HTMLElement)) el = el.parentElement; // e.g. an icon's <svg>
+        if (el && el !== document.documentElement && el !== document.body) el.click();
+      };
+      const next = () => requestAnimationFrame(pass);
+      (fade ? fade.finished : Promise.resolve()).then(next, next);
+    }, true);
+  }
+
   function init() {
     layers = [...document.querySelectorAll('.scene-bg')];
     const canvas = document.querySelector('.ambient');
     if (canvas) Ambient.init(canvas);
+    initTaps();
   }
 
-  R.themes = { list: THEMES, names: Object.keys(THEMES), apply, init, get current() { return current; } };
+  R.themes = { list: THEMES, names: Object.keys(THEMES), apply, init, get current() { return current; }, get fading() { return !!fade; } };
 })();

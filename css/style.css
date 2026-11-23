@@ -12,7 +12,10 @@
 @font-face { font-family: 'Quicksand'; font-style: normal; font-weight: 300 700; font-display: swap; src: url(../fonts/quicksand-latin-wght-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 @font-face { font-family: 'Quicksand'; font-style: normal; font-weight: 300 700; font-display: swap; src: url(../fonts/quicksand-latin-ext-wght-normal.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 
-/* ── Theme colors (registered so they fade smoothly between themes) ── */
+/* ── Theme colors ──
+   Registered so color-mix() and friends treat them as colors. They are NOT transitioned:
+   fading inherited variables on :root restyles and repaints the whole page every frame,
+   which made phones stutter. themes.js fades the colors with a view transition instead. */
 @property --ink { syntax: '<color>'; inherits: true; initial-value: #5a1e33; }
 @property --ink-soft { syntax: '<color>'; inherits: true; initial-value: #9a5168; }
 @property --accent { syntax: '<color>'; inherits: true; initial-value: #e0457b; }
@@ -37,8 +40,6 @@
   --safe-b: env(safe-area-inset-bottom, 0px);
   --shadow-soft: 0 18px 40px -18px rgba(60, 15, 35, .45);
 
-  transition: --ink 1.4s ease, --ink-soft 1.4s ease, --accent 1.4s ease, --accent-2 1.4s ease, --accent-ink 1.4s ease, --paper 1.4s ease,
-    --paper-ink 1.4s ease, --card 1.4s ease, --card-ink 1.4s ease, --glow 1.4s ease;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -66,6 +67,10 @@ h1:focus, h2:focus { outline: none; }
 .scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 .scene-bg { position: absolute; inset: 0; opacity: 0; transition: opacity 1.6s ease; }
 .scene-bg.on { opacity: 1; }
+/* Theme change: the browser cross-fades a snapshot of the old look into the new one on the GPU.
+   Taps during the fade are handled in themes.js (pointer-events here helps browsers that honor it). */
+::view-transition { pointer-events: none; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 1.2s; animation-timing-function: ease; }
 .ambient { position: absolute; inset: 0; width: 100%; height: 100%; }
 .app, .intro { position: relative; z-index: 1; }
 
