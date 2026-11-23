@@ -19,7 +19,7 @@ Made for a 12.1" 2560×1600 tablet (both orientations) and phones.
 - `content/settings.js`: for Kim, from Kenric, together since 2025-08-24.
 - `content/letter.js`: the letter as it was read in the recording.
 - `content/letter-timing.js`: each word's time, matched to the recording by `tools/align-letter.py`.
-- Click counters: count on each device only, until Firebase is set up (below).
+- Click counters: shared through Firebase (project `roses-a8df3`), so everyone sees the same numbers.
 
 The raw WAV recordings stay on your computer (`Audio Voiceover/`, ignored by git). They're big
 and the repo is public. Only the cleaned MP3s are published.
@@ -65,14 +65,14 @@ Firebase's Realtime Database is free at this size. Visitors don't sign in: the p
        "clicks": {
          ".read": true,
          "$card": {
-           ".write": true,
+           ".write": "newData.exists()",
            ".validate": "newData.isNumber() && newData.val() >= (data.exists() ? data.val() : 0) && newData.val() <= (data.exists() ? data.val() : 0) + 100 && $card.matches(/^[a-z0-9-]{1,40}$/)"
          }
        }
      }
    }
    ```
-   (Anyone can read the counts. Writes can only raise a count, by at most 100 at a time, and nothing outside `clicks` can be touched.)
+   (Anyone can read the counts. Writes can only raise a count, by at most 100 at a time. Counts can't be deleted or lowered, and nothing outside `clicks` can be touched. To reset a count, delete it yourself in the Firebase console's Data tab.)
 4. Click the gear icon, then **Project settings → Your apps**, then the **`</>`** (Web) icon. Give it a
    nickname, leave Hosting unticked, and click **Register app**.
 5. Copy the `firebaseConfig = { … }` block it shows into `firebase:` in `content/settings.js`.

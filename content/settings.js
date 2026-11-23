@@ -22,13 +22,15 @@ window.SETTINGS = {
 
   // Shared click counters for the voice notes (free Firebase Realtime Database, no sign-in
   // for visitors). Leave as null and the counters only count on each device.
-  // To turn it on, paste the "firebaseConfig" from your Firebase project here (see README).
-  firebase: null,
-  // firebase: {
-  //   apiKey: "…",
-  //   authDomain: "…",
-  //   databaseURL: "https://…-default-rtdb.asia-southeast1.firebasedatabase.app",
-  //   projectId: "…",
-  //   appId: "…",
-  // },
+  // This is the "firebaseConfig" from the Firebase project (see README). It isn't a secret:
+  // it's meant to sit in a website, and the database rules decide what visitors can do.
+  firebase: {
+    apiKey: "AIzaSyAvqXTCu3H4SvELiCL-sv8NPIavfVVWF84",
+    authDomain: "roses-a8df3.firebaseapp.com",
+    databaseURL: "https://roses-a8df3-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "roses-a8df3",
+    storageBucket: "roses-a8df3.firebasestorage.app",
+    messagingSenderId: "419592939368",
+    appId: "1:419592939368:web:99b808ab51263e47cc58dd",
+  },
 };
