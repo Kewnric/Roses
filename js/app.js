@@ -85,6 +85,7 @@
     // Not `disabled`: some mobile browsers grey out disabled buttons, which would fade the envelope.
     env.style.pointerEvents = 'none';
     env.setAttribute('aria-disabled', 'true');
+    env.blur();
     intro.classList.add('opening');
     const r = env.getBoundingClientRect();
     // Timings match the CSS: flap 0.3–1.1s, letter slides out 1.1–2.1s.

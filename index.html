@@ -26,8 +26,26 @@
         <span class="env-card-kicker">a little something</span>
         <span class="env-card-title">Happy Monthsary</span>
       </span>
-      <span class="env-front"></span>
-      <span class="env-flap"></span>
+      <!-- Real shapes, not CSS cut-outs: some browsers drop clip-path cut-outs mid-animation. -->
+      <span class="env-front">
+        <svg viewBox="0 0 155 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="env-g-front" x1="0" y1="0" x2=".18" y2="1"><stop offset="0" stop-color="#ffc3d2"/><stop offset="1" stop-color="#f9adc0"/></linearGradient>
+            <linearGradient id="env-g-bottom" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffd0dc"/><stop offset="1" stop-color="#fdbccc"/></linearGradient>
+          </defs>
+          <path d="M0 0 L77.5 54 L155 0 L155 100 L0 100 Z" fill="url(#env-g-front)"/>
+          <path d="M0 0 L77.5 54 L155 0" fill="none" stroke="rgba(150,30,70,.16)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+          <path d="M0 100 L77.5 47 L155 100 Z" fill="url(#env-g-bottom)"/>
+        </svg>
+      </span>
+      <span class="env-flap">
+        <svg viewBox="0 0 155 60" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="env-g-flap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7a3b8"/><stop offset="1" stop-color="#ef8ea8"/></linearGradient>
+          </defs>
+          <path d="M0 0 L155 0 L77.5 60 Z" fill="url(#env-g-flap)"/>
+        </svg>
+      </span>
       <span class="env-seal"></span>
     </button>
     <p class="intro-to">For <span data-her-name></span></p>
