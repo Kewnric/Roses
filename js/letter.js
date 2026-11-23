@@ -330,22 +330,23 @@
     shown.set(k, { el, place: p });
 
     if (animate && !reduceMotion()) {
-      const fx = innerWidth / 2, fy = innerHeight * 0.42;
-      const dx = fx - (g.wr.left + p.x), dy = fy - (g.wr.top + p.y);
-      const big = Math.max(1.5, Math.min(3.4, (Math.min(innerWidth, innerHeight) * 0.34) / p.s));
+      // Pop right where it settles (in the margin, never over the words): grow with a
+      // small overshoot, wobble, settle.
+      const r = p.rot;
       el.style.zIndex = 40;
       el.animate(
         [
-          { transform: `translate(${dx}px, ${dy}px) scale(0) rotate(-30deg)`, opacity: 0 },
-          { transform: `translate(${dx}px, ${dy}px) scale(${big * 1.14}) rotate(8deg)`, opacity: 1, offset: 0.15 },
-          { transform: `translate(${dx}px, ${dy}px) scale(${big}) rotate(-3deg)`, offset: 0.24 },
-          { transform: `translate(${dx}px, ${dy}px) scale(${big}) rotate(3deg)`, offset: 0.55 },
-          { transform: `translate(0px, 0px) scale(1.12) rotate(${p.rot}deg)`, offset: 0.88 },
-          { transform: `translate(0px, 0px) scale(1) rotate(${p.rot}deg)`, opacity: 1 },
+          { transform: `scale(0) rotate(${r - 35}deg)`, opacity: 0 },
+          { transform: `scale(1.16) rotate(${r + 8}deg)`, opacity: 1, offset: 0.38 },
+          { transform: `scale(.93) rotate(${r - 4}deg)`, offset: 0.6 },
+          { transform: `scale(1.04) rotate(${r + 2}deg)`, offset: 0.8 },
+          { transform: `scale(1) rotate(${r}deg)`, opacity: 1 },
         ],
-        { duration: 1900, easing: 'cubic-bezier(.33,.8,.3,1)' }
+        { duration: 900, easing: 'cubic-bezier(.3,.7,.35,1)' }
       ).onfinish = () => (el.style.zIndex = '');
-      setTimeout(() => burst(fx, fy, { count: 16, spread: Math.min(innerWidth, innerHeight) * 0.3, size: 16 }), 230);
+      // Little hearts burst outward, aimed away from the text.
+      const cx = g.wr.left + p.x, cy = g.wr.top + p.y;
+      setTimeout(() => burst(cx, cy, { count: 12, spread: p.s * 1.1, size: Math.max(10, p.s * 0.14), angle: p.side === 'l' ? Math.PI : 0, arc: Math.PI * 0.9 }), 250);
     } else {
       el.animate([{ opacity: 0, transform: `scale(.6) rotate(${p.rot}deg)` }, { opacity: 1, transform: `scale(1) rotate(${p.rot}deg)` }], { duration: 260, easing: 'ease-out' });
     }

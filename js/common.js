@@ -105,17 +105,22 @@
 
   /* ── Little heart / sparkle bursts ── */
   const BURST = ['#ff4d6d', '#ff8fab', '#ffb3c6', '#ffd166', '#ffffff', '#c77dff'];
-  function burst(x, y, { count = 14, spread = 140, size = 14, shapes = ['heart', 'dot', 'sparkle'] } = {}) {
+  /* angle/arc (radians) aim the burst: e.g. angle 0 + arc π sprays only to the right.
+     Defaults to a full circle. */
+  function burst(x, y, { count = 14, spread = 140, size = 14, shapes = ['heart', 'dot', 'sparkle'], angle = 0, arc = Math.PI * 2 } = {}) {
     if (reduceMotion()) return;
     const layer = $('.fx-layer');
     if (!layer) return;
+    const full = arc >= Math.PI * 2 - 1e-6;
     for (let k = 0; k < count; k++) {
       const shape = shapes[k % shapes.length];
       const el = h('span', { class: `fx fx-${shape}` });
       const s = size * (0.6 + Math.random() * 0.8);
       el.style.cssText = `left:${x}px;top:${y}px;width:${s}px;height:${s}px;--c:${BURST[k % BURST.length]}`;
       layer.append(el);
-      const ang = (Math.PI * 2 * k) / count + Math.random() * 0.6;
+      const ang = full
+        ? (Math.PI * 2 * k) / count + Math.random() * 0.6
+        : angle - arc / 2 + arc * ((k + Math.random() * 0.8) / count);
       const dist = spread * (0.45 + Math.random() * 0.6);
       const dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist - spread * 0.25;
       el.animate(

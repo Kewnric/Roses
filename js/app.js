@@ -82,12 +82,15 @@
     try { sessionStorage.setItem('roses-opened', '1'); } catch (e) {}
     if (skipAnimation || R.util.reduceMotion()) return reveal();
     const env = $('.envelope');
-    env.disabled = true;
+    // Not `disabled`: some mobile browsers grey out disabled buttons, which would fade the envelope.
+    env.style.pointerEvents = 'none';
+    env.setAttribute('aria-disabled', 'true');
     intro.classList.add('opening');
     const r = env.getBoundingClientRect();
-    setTimeout(() => burst(r.left + r.width / 2, r.top + r.height * 0.4, { count: 22, spread: Math.max(160, r.width * 0.55), size: 18 }), 1150);
-    setTimeout(() => intro.classList.add('leaving'), 2300);
-    setTimeout(reveal, 2950);
+    // Timings match the CSS: flap 0.3–1.1s, letter slides out 1.1–2.1s.
+    setTimeout(() => burst(r.left + r.width / 2, r.top + r.height * 0.1, { count: 22, spread: Math.max(160, r.width * 0.55), size: 18 }), 1500);
+    setTimeout(() => intro.classList.add('leaving'), 2600);
+    setTimeout(reveal, 3250);
   }
 
   function initIntro() {
