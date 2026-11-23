@@ -27,8 +27,9 @@
         title.append('Happy ', Object.assign(document.createElement('em'), { textContent: ordinal(months) }), ' Monthsary');
         $('.env-card-title').textContent = `Happy ${ordinal(months)} Monthsary`;
       } else title.textContent = 'Happy Monthsary';
-      const years = months / 12;
-      const extra = months >= 12 && months % 12 === 0 ? ` · that's ${years} year${years > 1 ? 's' : ''}!` : '';
+      const years = Math.floor(months / 12), rest = months % 12;
+      const plural = (n, unit) => `${n} ${unit}${n > 1 ? 's' : ''}`;
+      const extra = years < 1 ? '' : rest === 0 ? ` · that's ${plural(years, 'year')}!` : ` · ${plural(years, 'year')} & ${plural(rest, 'month')}`;
       sub.textContent = `${days.toLocaleString()} days of us · since ${since.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}${extra}`;
     } else {
       title.textContent = 'Happy Monthsary';

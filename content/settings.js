@@ -3,15 +3,15 @@
    ───────────────────────────────────────────────────────────── */
 window.SETTINGS = {
   // What you call her. Shows on the envelope and the home page.
-  herName: "My Love",
+  herName: "Kim",
 
   // How you sign off.
-  yourName: "Me",
+  yourName: "Kenric",
 
   // The day you became official, as "YYYY-MM-DD".
   // The site counts your monthsary number and the days you've been together from this date.
   // Leave it as null to hide the numbers.
-  togetherSince: null, // e.g. "2025-01-23"
+  togetherSince: "2025-08-24",
 
   // Small line on the envelope before she opens it.
   envelopeNote: "tap to open",

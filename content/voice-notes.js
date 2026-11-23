@@ -12,20 +12,19 @@
              cloud, letter, bow, bear, balloon, butterfly, ring, music, bandaid,
              coffee, any emoji like "🥺", or a photo like "images/us.jpg".
    clips   → the recordings for this card (cleaned up by tools/clean-audio.py).
-
-   Right now every clip is a PLACEHOLDER robot voice.
+             If you add or remove recordings, change the number to match.
    ───────────────────────────────────────────────────────────── */
 window.VOICE_NOTES = (() => {
   // clips("miss-me", 3) → audio/miss-me/01.mp3, 02.mp3, 03.mp3
   const clips = (id, n) => Array.from({ length: n }, (_, i) => `audio/${id}/${String(i + 1).padStart(2, '0')}.mp3`);
   return [
-  { id: "miss-me",    label: "Click me when you miss me",            sticker: "heart",   clips: clips("miss-me", 3) },
-  { id: "cant-sleep", label: "Click me when you can't sleep",        sticker: "moon",    clips: clips("cant-sleep", 3) },
-  { id: "sad",        label: "Click me when you're sad",             sticker: "cloud",   clips: clips("sad", 3) },
-  { id: "hug",        label: "Click me when you need a hug",         sticker: "bear",    clips: clips("hug", 3) },
-  { id: "stressed",   label: "Click me when you're stressed",        sticker: "flower",  clips: clips("stressed", 3) },
-  { id: "motivation", label: "Click me when you need a little push", sticker: "star",    clips: clips("motivation", 3) },
-  { id: "mad-at-me",  label: "Click me when you're mad at me",       sticker: "bandaid", clips: clips("mad-at-me", 3) },
-  { id: "i-love-you", label: "Click me when you want an I love you", sticker: "kiss",    clips: clips("i-love-you", 3) },
+  { id: "miss-me",    label: "Click me when you miss me",            sticker: "heart",   clips: clips("miss-me", 14) },
+  { id: "cant-sleep", label: "Click me when you can't sleep",        sticker: "moon",    clips: clips("cant-sleep", 6) },
+  { id: "sad",        label: "Click me when you're sad",             sticker: "cloud",   clips: clips("sad", 5) },
+  { id: "hug",        label: "Click me when you need a hug",         sticker: "bear",    clips: clips("hug", 6) },
+  { id: "stressed",   label: "Click me when you're stressed",        sticker: "flower",  clips: clips("stressed", 6) },
+  { id: "motivation", label: "Click me when you need a little push", sticker: "star",    clips: clips("motivation", 6) },
+  { id: "mad-at-me",  label: "Click me when you're mad at me",       sticker: "bandaid", clips: clips("mad-at-me", 6) },
+  { id: "i-love-you", label: "Click me when you want an I love you", sticker: "kiss",    clips: clips("i-love-you", 7) },
   ];
 })();

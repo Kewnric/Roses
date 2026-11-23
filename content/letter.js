@@ -29,18 +29,18 @@ window.LETTER = {
   startTheme: "blush",
 
   // Shown at the top of the paper. Leave "" to hide it.
-  date: "November 23, 2026",
+  date: "November 24, 2026",
 
   text: `
-Hi my love, {sticker:heart}
+Hi my baby, {sticker:heart}
 
-Happy monthsary! {sticker:cake} I wanted to make you something you could open anytime, so here it is: a little letter, read to you by me.
+Happy monthsary! {sticker:cake} I wanted to make something you could open anytime, so here it is: a little letter, read to you by me.
 
 {theme:sunset}
 Do you remember the first time we talked? {sticker:sparkles} I didn't know it yet, but that was the start of my favorite thing in the whole world. Every day since then, you've made ordinary days feel *golden*.
 
 {theme:night}
-On the nights we stay up way too late {sticker:moon} just talking about everything and nothing, I always think the same thing: I'm so lucky it's you. {sticker:star}
+On the nights we stayed up way too late {sticker:moon} just talking about everything and nothing, I always think the same thing: I'm so lucky it's you. {sticker:star}
 
 {theme:garden}
 Thank you for being patient with me, for laughing at my jokes even when they're bad, {sticker:flower} and for being my safe place. I'm still learning how to love you better, and I promise I'll never stop trying.
@@ -49,6 +49,6 @@ Thank you for being patient with me, for laughing at my jokes even when they're 
 So here's to us, to every month we've had and every month still coming. {sticker:rose} I love you, today and every day after. {sticker:kiss}
 
 Yours, always,
-Me {sticker:hearts}
+Kenric {sticker:hearts}
 `,
 };

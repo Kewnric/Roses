@@ -53,12 +53,21 @@ def decode(path, denoise, strength):
     """Audio file → mono float32 at 48 kHz, with low rumble filtered and (optionally) noise removed."""
     chain = ['highpass=f=70']
     if denoise:
-        # ffmpeg filter-graph escaping: the model path must not contain ':' unescaped.
-        mp = model().replace('\\', '/').replace(':', '\\:')
-        chain.append(f'arnndn=m={mp}:mix={strength}')
+        # ffmpeg escapes filter options at two levels. Quoting keeps the graph parser from eating
+        # the backslash, and the backslash keeps a Windows drive colon ("C:") from ending the option.
+        mp = model().replace('\\', '/').replace(':', '\\:').replace("'", '')
+        chain.append(f"arnndn=m='{mp}':mix={strength}")
     cmd = ['ffmpeg', '-nostdin', '-v', 'error', '-i', path, '-ac', '1', '-ar', str(SR), '-af', ','.join(chain), '-f', 'f32le', '-']
-    raw = subprocess.run(cmd, check=True, capture_output=True).stdout
-    return np.frombuffer(raw, dtype=np.float32).copy()
+    # Some ffmpeg builds (seen with 9.1 on Windows) occasionally crash inside arnndn, or emit a
+    # 10 ms frame of NaN. Both are random, so retry a crash and zero out any bad samples.
+    for attempt in range(5):
+        try:
+            raw = subprocess.run(cmd, check=True, capture_output=True).stdout
+            break
+        except subprocess.CalledProcessError:
+            if attempt == 4:
+                raise
+    return np.nan_to_num(np.frombuffer(raw, dtype=np.float32), nan=0.0, posinf=0.0, neginf=0.0)
 
 
 def frame_db(x):

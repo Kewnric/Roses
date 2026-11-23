@@ -13,51 +13,42 @@ Made for a 12.1" 2560×1600 tablet (both orientations) and phones.
 | **Voice notes** | Cards like "Click me when you miss me", each holding several short clips. Tap a card and a random clip plays; tap again and it switches to another one instantly. Every clip plays once before any repeats, and the same clip never plays twice in a row. The round button stops it. Each card shows how many times it's been tapped. |
 | **Letter** | Plays the letter recording. Words already read fade out, the current word is highlighted, stickers pop up at chosen words, and the whole page changes theme as the letter goes on. Has play/pause, stop, a seek bar, and tap-any-word-to-jump. |
 
-## Right now everything is a placeholder
+## What's filled in
 
-- `audio/`: a robot voice standing in for the real recordings (3 clips per card).
-- `content/letter.js`: a sample letter showing how stickers and themes are written.
-- `content/voice-notes.js`: sample card labels.
+- `audio/`: the real recordings, cleaned: 56 voice-note clips across 8 cards, and the letter.
+- `content/settings.js`: for Kim, from Kenric, together since 2025-08-24.
+- `content/letter.js`: the letter as it was read in the recording.
+- `content/letter-timing.js`: each word's time, matched to the recording by `tools/align-letter.py`.
 - Click counters: count on each device only, until Firebase is set up (below).
-- `content/settings.js`: her name, your name, and the start date (`null` for now).
 
-To swap in the real thing, send:
+The raw WAV recordings stay on your computer (`Audio Voiceover/`, ignored by git). They're big
+and the repo is public. Only the cleaned MP3s are published.
 
-1. The voice-note recordings (several short clips per card is perfect) and the label for each card.
-2. The real letter text, plus where you want stickers and theme changes.
-3. A recording of you reading the letter. The word timing in `content/letter-timing.js` gets regenerated from it so the read-along matches your voice.
-4. Her name, how you sign off, and your start date.
+## Re-doing the recordings
 
-## Sending your recordings
+Both tools run with [uv](https://docs.astral.sh/uv/) (it fetches Python and the libraries) and need
+[ffmpeg](https://ffmpeg.org/). On Windows: `winget install Gyan.FFmpeg astral-sh.uv`.
 
-This session runs in the cloud, so it can't see your computer. Upload the files to GitHub instead:
-
-1. Make a folder called `raw-audio` on your computer, with **one folder per card** inside it
-   (the folder names are the card ids: `miss-me`, `cant-sleep`, `sad`, `hug`, `stressed`,
-   `motivation`, `mad-at-me`, `i-love-you`, or new ones), plus the letter recording:
-   ```
-   raw-audio/
-     miss-me/      clip1.wav, clip2.wav, …
-     cant-sleep/   …
-     letter.wav
-   ```
-2. Open https://github.com/Kewnric/Roses, then **Add file → Upload files**.
-3. Drag the whole `raw-audio` folder in (Chrome and Edge keep the folders), then **Commit changes**.
-
-The website upload takes files up to **25 MB** each, 100 files at a time. WAV is about 10 MB per
-minute, so short clips are fine. A long letter recording may be too big: export it as .m4a/.mp3
-or split it. The repo is public, so anything uploaded can be seen by others and stays in its history.
-
-WAV is fine as input. `tools/clean-audio.py` turns each file into a small MP3 and cleans it:
-
-- removes background noise with RNNoise (a small neural network trained on speech)
-- trims silence at the start/end and shortens long pauses
-- evens out the volume so every clip is equally loud
-
-```bash
-python3 tools/clean-audio.py notes raw-audio audio            # every card folder
-python3 tools/clean-audio.py letter raw-audio/letter.wav audio/letter.mp3
+**Voice notes.** Put the recordings in one folder per card (folder name = card id, any file names):
 ```
+raw-audio/
+  miss-me/      clip1.wav, clip2.wav, …
+  cant-sleep/   …
+```
+```bash
+uv run --with numpy python tools/clean-audio.py notes raw-audio audio
+```
+Each one becomes `audio/<card>/01.mp3`, `02.mp3`, … with background noise removed (RNNoise),
+silence trimmed, long pauses shortened and volume evened out. Then set each card's clip count in
+`content/voice-notes.js`.
+
+**The letter.** Clean the recording, then match the words to it:
+```bash
+uv run --with numpy python tools/clean-audio.py letter "path/to/letter.wav" audio/letter.mp3
+uv run --python 3.12 --with faster-whisper python tools/align-letter.py
+```
+`align-letter.py` transcribes the recording with Whisper, writes `content/letter-timing.js`, and lists
+any words you said differently from `content/letter.js`. Fix the text to match what you said and run it again.
 
 ## Shared click counters (Firebase, free, no sign-in for visitors)
 
@@ -113,6 +104,7 @@ index.html            the page
 css/style.css         all the styling and layouts
 js/                   site code (themes, stickers, shuffle, click counter, voice notes, letter player)
 tools/clean-audio.py  cleans and converts recordings (noise, silences, volume → MP3)
+tools/align-letter.py matches the letter text to the recording (word timing)
 content/              ← the stuff that's yours: settings, voice notes, letter, timing
 audio/                recordings
 images/               photos for photo stickers (optional)
