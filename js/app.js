@@ -80,7 +80,6 @@
       route();
       openedOnce = true;
     };
-    try { sessionStorage.setItem('roses-opened', '1'); } catch (e) {}
     if (skipAnimation || R.util.reduceMotion()) return reveal();
     const env = $('.envelope');
     // Not `disabled`: some mobile browsers grey out disabled buttons, which would fade the envelope.
@@ -95,12 +94,20 @@
     setTimeout(reveal, 3300);
   }
 
+  /* Every visit starts fresh: the envelope, then the home page. The browser may still hold the
+     old address (#/letter) when the tab is reopened or the link is opened again, so drop it.
+     Moving between pages inside the site (and Back between them) works as usual.
+     ?skip opens straight to the page in the address (for testing). */
   function initIntro() {
-    let opened = false;
-    try { opened = sessionStorage.getItem('roses-opened') === '1'; } catch (e) {}
-    if (opened || /[?&]skip\b/.test(location.search)) return openApp(true);
+    if (/[?&]skip\b/.test(location.search)) return openApp(true);
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    try { sessionStorage.removeItem('roses-opened'); } catch (e) {} // flag from older versions
     $('.envelope').addEventListener('click', () => openApp(false), { once: true });
   }
+
+  // Coming back with Back from another site can restore the page exactly as it was left
+  // (back/forward cache). Reload instead, so that revisit starts at the envelope too.
+  addEventListener('pageshow', (e) => { if (e.persisted) location.reload(); });
 
   function start() {
     R.themes.init();
