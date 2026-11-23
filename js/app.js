@@ -88,10 +88,10 @@
     env.blur();
     intro.classList.add('opening');
     const r = env.getBoundingClientRect();
-    // Timings match the CSS: flap 0.3–1.1s, letter slides out 1.1–2.1s.
-    setTimeout(() => burst(r.left + r.width / 2, r.top + r.height * 0.1, { count: 22, spread: Math.max(160, r.width * 0.55), size: 18 }), 1500);
-    setTimeout(() => intro.classList.add('leaving'), 2600);
-    setTimeout(reveal, 3250);
+    // Timings match the CSS: flap 0.3–1.15s, letter slides out 1.15–2.15s.
+    setTimeout(() => burst(r.left + r.width / 2, r.top + r.height * 0.1, { count: 22, spread: Math.max(160, r.width * 0.55), size: 18 }), 1600);
+    setTimeout(() => intro.classList.add('leaving'), 2650);
+    setTimeout(reveal, 3300);
   }
 
   function initIntro() {

@@ -341,31 +341,43 @@
       const sx = Math.max(small / 2 + 4, Math.min(wr0.width - small / 2 - 4, sr.left + sr.width / 2 - wr0.left));
       const sy = sr.top - wr0.top - small * 0.45;
       const dx = sx - p.x, dy = sy - p.y;
-      const lift = Math.min(70, Math.hypot(dx, dy) * 0.18); // arc height of the flight
       const r = p.rot;
-      const T = (x, y, s, deg) => `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)}) rotate(${deg.toFixed(1)}deg)`;
+      const T = (x, y, s, deg) => `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) scale(${s.toFixed(4)}) rotate(${deg.toFixed(2)}deg)`;
+
+      // The flight is ONE smooth curve (a quadratic Bézier from the word to the margin, bowed
+      // gently upward), with one ease-in-out applied over the whole trip: it starts from rest,
+      // glides, and slows to rest on arrival. Size and tilt follow the same curve, so it grows
+      // continuously to full size exactly as it lands. Sampled finely so there are no corners.
+      const dist = Math.hypot(dx, dy);
+      const bow = Math.min(90, dist * 0.22);
+      const cx = dx * 0.5, cy = dy * 0.5 - bow; // control point: halfway, lifted up
+      const ease = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2); // easeInOutCubic
+      const POP = 0.12, SETTLE = 0.2, FLY = 0.32; // pop → settle → short pause → fly
+      const startTilt = r - 8;
+      const frames = [
+        { offset: 0, transform: T(dx, dy + 8, 0, r - 25), opacity: 0, easing: 'cubic-bezier(.2,.8,.3,1)' },
+        { offset: POP, transform: T(dx, dy, k0 * 1.28, r + 6), opacity: 1, easing: 'ease-in-out' }, // pops up small
+        { offset: SETTLE, transform: T(dx, dy, k0, startTilt) }, // settles on the word, then pauses
+      ];
+      const STEPS = 48;
+      for (let i = 0; i <= STEPS; i++) {
+        const u = ease(i / STEPS), v = 1 - u;
+        const x = v * v * dx + 2 * v * u * cx; // B(u) with P0=(dx,dy), P1=(cx,cy), P2=(0,0)
+        const y = v * v * dy + 2 * v * u * cy;
+        frames.push({ offset: FLY + (1 - FLY) * (i / STEPS), transform: T(x, y, k0 + (1 - k0) * u, startTilt + (r - startTilt) * u) });
+      }
+      frames[frames.length - 1].opacity = 1;
       el.style.zIndex = 40;
-      el.animate(
-        [
-          { offset: 0, transform: T(dx, dy + 8, 0, r - 25), opacity: 0, easing: 'ease-out' },
-          { offset: 0.13, transform: T(dx, dy, k0 * 1.3, r + 8), opacity: 1, easing: 'ease-in-out' }, // pop
-          { offset: 0.21, transform: T(dx, dy, k0, r - 4), easing: 'ease-in-out' },
-          { offset: 0.36, transform: T(dx, dy, k0, r), easing: 'cubic-bezier(.45,0,.6,.6)' }, // short pause on the word
-          { offset: 0.63, transform: T(dx * 0.45, dy * 0.45 - lift, k0 + (1 - k0) * 0.45, r), easing: 'cubic-bezier(.3,.4,.3,1)' }, // mid-flight
-          { offset: 0.9, transform: T(0, 0, 1.06, r), easing: 'ease-out' }, // arrives, full size
-          { offset: 1, transform: T(0, 0, 1, r), opacity: 1 },
-        ],
-        { duration: 1700 }
-      ).onfinish = () => (el.style.zIndex = '');
+      el.animate(frames, { duration: 1800 }).onfinish = () => (el.style.zIndex = '');
       // A tiny sparkle where it pops, then hearts where it lands (aimed away from the text).
       setTimeout(() => {
         const w = span.getBoundingClientRect();
         burst(w.left + w.width / 2, w.top - small * 0.45, { count: 8, spread: small * 1.3, size: 8 });
-      }, 140);
+      }, 190);
       setTimeout(() => {
         const w = wrap.getBoundingClientRect();
         burst(w.left + p.x, w.top + p.y, { count: 12, spread: p.s * 1.1, size: Math.max(10, p.s * 0.14), angle: p.side === 'l' ? Math.PI : 0, arc: Math.PI * 0.9 });
-      }, 1530);
+      }, 1720);
     } else {
       el.animate([{ opacity: 0, transform: `scale(.6) rotate(${p.rot}deg)` }, { opacity: 1, transform: `scale(1) rotate(${p.rot}deg)` }], { duration: 260, easing: 'ease-out' });
     }
