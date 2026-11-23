@@ -19,4 +19,16 @@ window.SETTINGS = {
   // The site's look outside the letter. Pick one of:
   // blush, roses, sunset, night, garden, ocean, golden, lavender, snow, party
   theme: "blush",
+
+  // Shared click counters for the voice notes (free Firebase Realtime Database, no sign-in
+  // for visitors). Leave as null and the counters only count on each device.
+  // To turn it on, paste the "firebaseConfig" from your Firebase project here (see README).
+  firebase: null,
+  // firebase: {
+  //   apiKey: "…",
+  //   authDomain: "…",
+  //   databaseURL: "https://…-default-rtdb.asia-southeast1.firebasedatabase.app",
+  //   projectId: "…",
+  //   appId: "…",
+  // },
 };
