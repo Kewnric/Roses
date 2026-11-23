@@ -330,23 +330,42 @@
     shown.set(k, { el, place: p });
 
     if (animate && !reduceMotion()) {
-      // Pop right where it settles (in the margin, never over the words): grow with a
-      // small overshoot, wobble, settle.
+      // Pops up SMALL just above the word that triggered it, pauses for a beat, then
+      // travels in a gentle arc to its spot in the margin, growing to full size on arrival.
+      const span = spans[parsed.stickers[k].word];
+      const wr0 = wrap.getBoundingClientRect();
+      const sr = span.getBoundingClientRect();
+      const small = Math.max(26, Math.min(46, p.s * 0.38)); // on-screen size while on the word
+      const k0 = small / p.s;
+      // Start point in the wrap's coordinates: centered over the word, just above its top.
+      const sx = Math.max(small / 2 + 4, Math.min(wr0.width - small / 2 - 4, sr.left + sr.width / 2 - wr0.left));
+      const sy = sr.top - wr0.top - small * 0.45;
+      const dx = sx - p.x, dy = sy - p.y;
+      const lift = Math.min(70, Math.hypot(dx, dy) * 0.18); // arc height of the flight
       const r = p.rot;
+      const T = (x, y, s, deg) => `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)}) rotate(${deg.toFixed(1)}deg)`;
       el.style.zIndex = 40;
       el.animate(
         [
-          { transform: `scale(0) rotate(${r - 35}deg)`, opacity: 0 },
-          { transform: `scale(1.16) rotate(${r + 8}deg)`, opacity: 1, offset: 0.38 },
-          { transform: `scale(.93) rotate(${r - 4}deg)`, offset: 0.6 },
-          { transform: `scale(1.04) rotate(${r + 2}deg)`, offset: 0.8 },
-          { transform: `scale(1) rotate(${r}deg)`, opacity: 1 },
+          { offset: 0, transform: T(dx, dy + 8, 0, r - 25), opacity: 0, easing: 'ease-out' },
+          { offset: 0.13, transform: T(dx, dy, k0 * 1.3, r + 8), opacity: 1, easing: 'ease-in-out' }, // pop
+          { offset: 0.21, transform: T(dx, dy, k0, r - 4), easing: 'ease-in-out' },
+          { offset: 0.36, transform: T(dx, dy, k0, r), easing: 'cubic-bezier(.45,0,.6,.6)' }, // short pause on the word
+          { offset: 0.63, transform: T(dx * 0.45, dy * 0.45 - lift, k0 + (1 - k0) * 0.45, r), easing: 'cubic-bezier(.3,.4,.3,1)' }, // mid-flight
+          { offset: 0.9, transform: T(0, 0, 1.06, r), easing: 'ease-out' }, // arrives, full size
+          { offset: 1, transform: T(0, 0, 1, r), opacity: 1 },
         ],
-        { duration: 900, easing: 'cubic-bezier(.3,.7,.35,1)' }
+        { duration: 1700 }
       ).onfinish = () => (el.style.zIndex = '');
-      // Little hearts burst outward, aimed away from the text.
-      const cx = g.wr.left + p.x, cy = g.wr.top + p.y;
-      setTimeout(() => burst(cx, cy, { count: 12, spread: p.s * 1.1, size: Math.max(10, p.s * 0.14), angle: p.side === 'l' ? Math.PI : 0, arc: Math.PI * 0.9 }), 250);
+      // A tiny sparkle where it pops, then hearts where it lands (aimed away from the text).
+      setTimeout(() => {
+        const w = span.getBoundingClientRect();
+        burst(w.left + w.width / 2, w.top - small * 0.45, { count: 8, spread: small * 1.3, size: 8 });
+      }, 140);
+      setTimeout(() => {
+        const w = wrap.getBoundingClientRect();
+        burst(w.left + p.x, w.top + p.y, { count: 12, spread: p.s * 1.1, size: Math.max(10, p.s * 0.14), angle: p.side === 'l' ? Math.PI : 0, arc: Math.PI * 0.9 });
+      }, 1530);
     } else {
       el.animate([{ opacity: 0, transform: `scale(.6) rotate(${p.rot}deg)` }, { opacity: 1, transform: `scale(1) rotate(${p.rot}deg)` }], { duration: 260, easing: 'ease-out' });
     }
